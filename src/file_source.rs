@@ -29,14 +29,16 @@ pub struct OrcSource {
     metrics: ExecutionPlanMetricsSet,
     statistics: Statistics,
     batch_size: usize,
+    table_schema: TableSchema,
 }
 
-impl Default for OrcSource {
-    fn default() -> Self {
+impl OrcSource {
+    pub fn new(table_schema: TableSchema) -> Self {
         Self {
             metrics: ExecutionPlanMetricsSet::default(),
             statistics: Statistics::default(),
             batch_size: 1024,
+            table_schema,
         }
     }
 }
@@ -55,15 +57,15 @@ impl FileSource for OrcSource {
         self
     }
 
+    fn table_schema(&self) -> &TableSchema {
+        &self.table_schema
+    }
+
     fn with_batch_size(&self, batch_size: usize) -> Arc<dyn FileSource> {
         Arc::new(Self {
             batch_size,
             ..self.clone()
         })
-    }
-
-    fn with_schema(&self, _schema: TableSchema) -> Arc<dyn FileSource> {
-        Arc::new(self.clone())
     }
 
     fn with_projection(&self, _config: &FileScanConfig) -> Arc<dyn FileSource> {

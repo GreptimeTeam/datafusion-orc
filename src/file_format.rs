@@ -34,6 +34,7 @@ use crate::OrcSource;
 use async_trait::async_trait;
 use datafusion::catalog::Session;
 use datafusion::datasource::source::DataSourceExec;
+use datafusion_datasource::TableSchema;
 use futures_util::StreamExt;
 use object_store::path::Path;
 use object_store::{ObjectMeta, ObjectStore};
@@ -122,7 +123,7 @@ impl FileFormat for OrcFormat {
         Ok(DataSourceExec::from_data_source(conf))
     }
 
-    fn file_source(&self) -> Arc<dyn FileSource> {
-        Arc::new(OrcSource::default())
+    fn file_source(&self, table_schema: TableSchema) -> Arc<dyn FileSource> {
+        Arc::new(OrcSource::new(table_schema))
     }
 }

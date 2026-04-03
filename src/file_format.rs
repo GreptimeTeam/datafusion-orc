@@ -20,26 +20,25 @@ use std::collections::HashMap;
 use std::fmt::Debug;
 use std::sync::Arc;
 
+use async_trait::async_trait;
 use datafusion::arrow::datatypes::{Schema, SchemaRef};
+use datafusion::catalog::Session;
 use datafusion::common::Statistics;
 use datafusion::datasource::file_format::file_compression_type::FileCompressionType;
 use datafusion::datasource::file_format::FileFormat;
 use datafusion::datasource::physical_plan::{FileScanConfig, FileSource};
+use datafusion::datasource::source::DataSourceExec;
 use datafusion::datasource::table_schema::TableSchema;
 use datafusion::error::{DataFusionError, Result};
+use datafusion::object_store::path::Path;
+use datafusion::object_store::{ObjectMeta, ObjectStore};
 use datafusion::physical_plan::ExecutionPlan;
 use futures::TryStreamExt;
+use futures_util::StreamExt;
 use orc_rust::reader::metadata::read_metadata_async;
 
-use crate::OrcSource;
-use async_trait::async_trait;
-use datafusion::catalog::Session;
-use datafusion::datasource::source::DataSourceExec;
-use futures_util::StreamExt;
-use object_store::path::Path;
-use object_store::{ObjectMeta, ObjectStore};
-
 use super::object_store_reader::ObjectStoreReader;
+use crate::OrcSource;
 
 async fn fetch_schema(store: &Arc<dyn ObjectStore>, file: &ObjectMeta) -> Result<(Path, Schema)> {
     let loc_path = file.location.clone();

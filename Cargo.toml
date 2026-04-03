@@ -34,11 +34,10 @@ all-features = true
 [dependencies]
 async-trait = { version = "0.1.77" }
 bytes = "1.4"
-datafusion = "52.0"
+datafusion = "53.0"
 futures = { version = "0.3", default-features = false, features = ["std"] }
 futures-util = { version = "0.3" }
-object_store = { version = "0.12" }
-orc-rust = { version = "0.7", features = ["async"] }
+orc-rust = { version = "0.8", features = ["async"] }
 tokio = { version = "1.28", features = [
     "io-util",
     "sync",

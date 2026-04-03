@@ -19,9 +19,9 @@ use crate::physical_exec::OrcOpener;
 use datafusion::common::DataFusionError;
 use datafusion::datasource::physical_plan::{FileOpener, FileScanConfig, FileSource};
 use datafusion::datasource::table_schema::TableSchema;
+use datafusion::object_store::ObjectStore;
 use datafusion::physical_plan::metrics::ExecutionPlanMetricsSet;
 use datafusion::physical_plan::projection::ProjectionExprs;
-use object_store::ObjectStore;
 use std::any::Any;
 use std::sync::Arc;
 

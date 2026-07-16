@@ -186,23 +186,19 @@ mod tests {
         )
         .await?;
 
-        let actual = ctx
-            .sql("select int16, utf8 from table1 limit 5")
-            .await?
-            .collect()
+        let dataframe = ctx
+            .sql("select utf8 from table1 where int16 = 1")
             .await?;
+        assert_eq!(dataframe.schema().field(0).name(), "utf8");
+        let actual = dataframe.collect().await?;
 
         assert_batches_sorted_eq!(
             [
-                "+-------+--------+",
-                "| int16 | utf8   |",
-                "+-------+--------+",
-                "|       |        |",
-                "| -1    |        |",
-                "| 0     |        |",
-                "| 1     | a      |",
-                "| 32767 | encode |",
-                "+-------+--------+",
+                "+------+",
+                "| utf8 |",
+                "+------+",
+                "| a    |",
+                "+------+",
             ],
             &actual
         );

@@ -18,11 +18,10 @@
 use std::sync::Arc;
 
 use bytes::Bytes;
+use datafusion::object_store::{GetOptions, ObjectMeta, ObjectStore, ObjectStoreExt};
 use futures::future::BoxFuture;
 use futures::{FutureExt, TryFutureExt};
 use orc_rust::reader::AsyncChunkReader;
-
-use object_store::{GetOptions, ObjectMeta, ObjectStore, ObjectStoreExt};
 
 /// Implements [`AsyncChunkReader`] to allow reading ORC files via `object_store` API.
 pub struct ObjectStoreReader {

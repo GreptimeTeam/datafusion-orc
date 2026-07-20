@@ -22,12 +22,11 @@ use datafusion::arrow::error::ArrowError;
 use datafusion::datasource::listing::PartitionedFile;
 use datafusion::datasource::physical_plan::{FileOpenFuture, FileOpener};
 use datafusion::error::Result;
+use datafusion::object_store::ObjectStore;
 use datafusion::physical_plan::projection::ProjectionExprs;
+use futures_util::{StreamExt, TryStreamExt};
 use orc_rust::projection::ProjectionMask;
 use orc_rust::ArrowReaderBuilder;
-
-use futures_util::{StreamExt, TryStreamExt};
-use object_store::ObjectStore;
 
 use super::object_store_reader::ObjectStoreReader;
 

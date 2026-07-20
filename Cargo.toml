@@ -37,7 +37,6 @@ bytes = "1.4"
 datafusion = "54.0.0"
 futures = { version = "0.3", default-features = false, features = ["std"] }
 futures-util = { version = "0.3" }
-object_store = { version = "0.13" }
 orc-rust = { version = "0.8", features = ["async"] }
 tokio = { version = "1.28", features = [
     "io-util",

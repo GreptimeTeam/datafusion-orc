@@ -15,14 +15,17 @@
 // specific language governing permissions and limitations
 // under the License.
 
-use crate::physical_exec::OrcOpener;
-use datafusion::common::DataFusionError;
+use std::sync::Arc;
+
+use datafusion::common::tree_node::TreeNodeRecursion;
+use datafusion::common::{DataFusionError, Result};
 use datafusion::datasource::physical_plan::{FileOpener, FileScanConfig, FileSource};
 use datafusion::datasource::table_schema::TableSchema;
 use datafusion::object_store::ObjectStore;
 use datafusion::physical_plan::metrics::ExecutionPlanMetricsSet;
 use datafusion::physical_plan::projection::ProjectionExprs;
-use std::sync::Arc;
+
+use crate::physical_exec::OrcOpener;
 
 #[derive(Debug, Clone)]
 pub struct OrcSource {
@@ -85,6 +88,15 @@ impl FileSource for OrcSource {
 
     fn file_type(&self) -> &str {
         "orc"
+    }
+
+    fn apply_expressions(
+        &self,
+        f: &mut dyn FnMut(
+            &Arc<dyn datafusion::physical_expr::PhysicalExpr>,
+        ) -> Result<TreeNodeRecursion>,
+    ) -> Result<TreeNodeRecursion> {
+        datafusion::physical_plan::apply_expression_roots(self.projection.iter(), f)
     }
 
     fn try_pushdown_projection(

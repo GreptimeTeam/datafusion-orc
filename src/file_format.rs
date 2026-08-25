@@ -19,26 +19,25 @@ use std::collections::HashMap;
 use std::fmt::Debug;
 use std::sync::Arc;
 
+use async_trait::async_trait;
 use datafusion::arrow::datatypes::{Schema, SchemaRef};
+use datafusion::catalog::Session;
 use datafusion::common::Statistics;
 use datafusion::datasource::file_format::file_compression_type::FileCompressionType;
 use datafusion::datasource::file_format::FileFormat;
 use datafusion::datasource::physical_plan::{FileScanConfig, FileSource};
+use datafusion::datasource::source::DataSourceExec;
 use datafusion::datasource::table_schema::TableSchema;
 use datafusion::error::{DataFusionError, Result};
 use datafusion::object_store::path::Path;
 use datafusion::object_store::{ObjectMeta, ObjectStore};
 use datafusion::physical_plan::ExecutionPlan;
 use futures::TryStreamExt;
+use futures_util::StreamExt;
 use orc_rust::reader::metadata::read_metadata_async;
 
-use crate::OrcSource;
-use async_trait::async_trait;
-use datafusion::catalog::Session;
-use datafusion::datasource::source::DataSourceExec;
-use futures_util::StreamExt;
-
 use super::object_store_reader::ObjectStoreReader;
+use crate::OrcSource;
 
 async fn fetch_schema(store: &Arc<dyn ObjectStore>, file: &ObjectMeta) -> Result<(Path, Schema)> {
     let loc_path = file.location.clone();
@@ -78,7 +77,13 @@ impl FileFormat for OrcFormat {
         let mut schemas: Vec<_> = futures::stream::iter(objects)
             .map(|object| fetch_schema(store, object))
             .boxed() // Workaround https://github.com/rust-lang/rust/issues/64552
-            .buffered(state.config_options().execution.meta_fetch_concurrency)
+            .buffered(
+                state
+                    .config_options()
+                    .execution
+                    .meta_fetch_concurrency
+                    .into(),
+            )
             .try_collect()
             .await?;
 
